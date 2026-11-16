@@ -1,0 +1,14 @@
+substitutions:
+  device_name: "room-sensor"
+  display_name: "Room"
+
+packages:
+  device: !include common.yaml
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${display_name}
+
+api:
+  encryption:
+    key: !secret api_key

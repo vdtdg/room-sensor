@@ -1,0 +1,39 @@
+# Shared hardware settings. Verify these against your board before flashing.
+substitutions:
+  temperature_offset: "4.0"
+
+packages:
+  screen: !include display.yaml
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+
+i2c:
+  sda: GPIO0
+  scl: GPIO1
+  scan: true
+
+sensor:
+  - platform: scd4x
+    temperature_offset: ${temperature_offset}
+    co2:
+      name: "CO2"
+      id: co2
+    temperature:
+      name: "Temperature"
+      id: temperature
+    humidity:
+      name: "Humidity"
+      id: humidity
+
+ota:
+  - platform: esphome
+    encryption:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password

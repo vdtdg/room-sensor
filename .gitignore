@@ -1,0 +1,24 @@
+# Local credentials, including copies kept in device subdirectories.
+secrets.yaml
+secrets.*.yaml
+!secrets.example.yaml
+.env
+.env.*
+!.env.example
+
+# ESPHome downloads, generated firmware, and Python environments.
+.esphome/
+.pio/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.bin
+*.elf
+*.o
+
+# Editor and desktop files.
+.idea/
+.vscode/
+*.swp
+.DS_Store

@@ -1,0 +1,54 @@
+# Shared screen layout. Override display_name in the device YAML.
+font:
+  - file: "gfonts://Roboto"
+    id: font_header
+    size: 12
+  - file: "gfonts://Roboto"
+    id: font_reading
+    size: 10
+  - file: "gfonts://Roboto"
+    id: font_measurement
+    size: 18
+  - file: "gfonts://Roboto"
+    id: font_compact
+    size: 12
+
+time:
+  - platform: homeassistant
+    id: display_time
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    update_interval: 1s
+    lambda: |-
+      it.print(0, 0, id(font_header), TextAlign::TOP_LEFT, "${display_name}");
+      auto now = id(display_time).now();
+      it.print(128, 0, id(font_header), TextAlign::TOP_RIGHT,
+               now.is_valid() ? now.strftime("%H:%M").c_str() : "--:--");
+
+      it.print(0, 20, id(font_reading), TextAlign::TOP_LEFT, "Temp °C");
+      it.print(64, 20, id(font_reading), TextAlign::TOP_CENTER, "Hum %");
+      it.print(128, 20, id(font_reading), TextAlign::TOP_RIGHT, "CO2 ppm");
+
+      if (id(temperature).has_state() && std::isfinite(id(temperature).state)) {
+        it.printf(0, 60, id(font_measurement), TextAlign::BOTTOM_LEFT,
+                  "%.1f", id(temperature).state);
+      } else {
+        it.print(0, 60, id(font_measurement), TextAlign::BOTTOM_LEFT, "--");
+      }
+      if (id(humidity).has_state() && std::isfinite(id(humidity).state)) {
+        it.printf(64, 60, id(font_measurement), TextAlign::BOTTOM_CENTER,
+                  "%.0f", id(humidity).state);
+      } else {
+        it.print(64, 60, id(font_measurement), TextAlign::BOTTOM_CENTER, "--");
+      }
+      if (id(co2).has_state() && std::isfinite(id(co2).state)) {
+        // Five-digit values need a smaller font to stay in the CO2 column.
+        auto *co2_font = id(co2).state >= 9999.5f ? id(font_compact) : id(font_measurement);
+        it.printf(128, 60, co2_font, TextAlign::BOTTOM_RIGHT,
+                  "%.0f", id(co2).state);
+      } else {
+        it.print(128, 60, id(font_measurement), TextAlign::BOTTOM_RIGHT, "--");
+      }
